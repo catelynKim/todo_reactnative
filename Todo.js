@@ -1,110 +1,105 @@
-import React, { Component } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, Dimensions, TextInput } from "react-native"
-import PropTypes from "prop-types"
-
-const { height, width } = Dimensions.get("window");
-
-export default class Todo extends Component{
-    static propTypes = {
-        text: PropTypes.string.isRequired,
-        isCompleted: PropTypes.bool.isRequired,
-        deleteTodo: PropTypes.func.isRequired,
-        id: PropTypes.string.isRequired,
-        completeTodo: PropTypes.func.isRequired,
-        uncompleteTodo: PropTypes.func.isRequired,
-        updateTodo: PropTypes.func.isRequired
+"use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+var react_1 = require("react");
+var mobx_react_1 = require("mobx-react");
+var mobx_1 = require("mobx");
+var react_native_1 = require("react-native");
+var prop_types_1 = require("prop-types");
+var _a = react_native_1.Dimensions.get("window"), height = _a.height, width = _a.width;
+var todoStore = mobx_1.observable({
+    isEditing: false,
+    todoValue: ""
+});
+var Todo = /** @class */ (function (_super) {
+    __extends(Todo, _super);
+    function Todo(props) {
+        var _this = _super.call(this, props) || this;
+        _this._toggleComplete = function () {
+            var _a = _this.props, isDone = _a.isDone, setTodoItemDone = _a.setTodoItemDone, id = _a.id;
+            setTodoItemDone(id, !isDone);
+        };
+        _this._startEditing = function () {
+            todoStore.isEditing = true;
+        };
+        _this._finishEditing = function () {
+            var _a = _this.props, id = _a.id, modifyTodoItem = _a.modifyTodoItem;
+            modifyTodoItem(id, todoStore.todoValue);
+            todoStore.isEditing = false;
+        };
+        _this._controlInput = function (text) {
+            todoStore.todoValue = text;
+        };
+        todoStore.todoValue = props.text;
+        return _this;
     }
-
-    state = {
-        isEditing: false,
-        todoValue: ""
-    }
-
-    constructor(props) {
-        super(props);
-        this.state = {
-            isEditing: false,
-            todoValue: props.text
-        }
-    }
-
-    render() {
-        const { isEditing, todoValue } = this.state;
-        const { text, deleteTodo, id, isCompleted } = this.props;
-        return (
-            <View style={styles.container}>
-                <View style={styles.column}>
-                    <TouchableOpacity onPress={this._toggleComplete}>
-                        <View style={[styles.circle, isCompleted? styles.compltedCircle : styles.incompletedCircle ]} />
-                    </TouchableOpacity>
-                    {isEditing? (
-                        <TextInput style={[styles.text, styles.input, isCompleted? styles.completedText : styles.incompletedText]} value={todoValue} multiline={true} onChangeText={this._controlInput} returnKeyType={"done"} onBlur={this._finishEditing} />
-                    ) : (
-                        <Text style={[styles.text, isCompleted? styles.completedText : styles.incompletedText]}> {text} </Text>
-                    )}
-                </View>
-                {isEditing ? (
-                    <View style={styles.actions}>
-                        <TouchableOpacity onPressOut={this._finishEditing}>
-                            <View style={styles.actionContainer}>
-                                <Text style={styles.actionText}>✅</Text>
-                            </View>
-                        </TouchableOpacity>
-                    </View>
-                ) : (
-                    <View style={styles.actions}>
-                        <TouchableOpacity onPressOut={this._startEditing}>
-                            <View style={styles.actionContainer}>
-                                <Text style={styles.actionText}>✏️</Text>
-                            </View>
-                        </TouchableOpacity>
-                        <TouchableOpacity onPressOut={() => deleteTodo(id)}>
-                            <View style={styles.actionContainer}>
-                                <Text style={styles.actionText}>❌</Text>
-                            </View>
-                        </TouchableOpacity>
-                    </View>
-                )}
-            </View>
-        );
-    }
-
-    _toggleComplete = () => {
-        const { isCompleted, uncompleteTodo, completeTodo, id } = this.props;
-        if(isCompleted) {
-            uncompleteTodo(id);
-        } else {
-            completeTodo(id);
-        }
-    }
-
-    _startEditing = () => {
-        this.setState({
-            isEditing: true
-        })
-    }
-
-    _finishEditing = () => {
-        const { todoValue } = this.state;
-        const { id, updateTodo } = this.props;
-        updateTodo(id, todoValue);
-        this.setState({
-            isEditing: false
-        });
-    }
-
-    _controlInput = (text) => {
-        this.setState({
-            todoValue: text
-        })
-    }
-}
-
-const styles = StyleSheet.create({
+    Todo.prototype.render = function () {
+        var _a = this.props, text = _a.text, deleteTodo = _a.deleteTodo, id = _a.id, isDone = _a.isDone;
+        return (<react_native_1.View style={styles.container}>
+                <react_native_1.View style={styles.column}>
+                    <react_native_1.TouchableOpacity onPress={this._toggleComplete}>
+                        <react_native_1.View style={[styles.circle, isDone ? styles.compltedCircle : styles.incompletedCircle]}/>
+                    </react_native_1.TouchableOpacity>
+                    {todoStore.isEditing ? (<react_native_1.TextInput style={[styles.text, styles.input, isDone ? styles.completedText : styles.incompletedText]} value={todoStore.todoValue} multiline={true} onChangeText={this._controlInput} returnKeyType={"done"} onBlur={this._finishEditing}/>) : (<react_native_1.Text style={[styles.text, isDone ? styles.completedText : styles.incompletedText]}> {text} </react_native_1.Text>)}
+                </react_native_1.View>
+                {todoStore.isEditing ? (<react_native_1.View style={styles.actions}>
+                        <react_native_1.TouchableOpacity onPressOut={this._finishEditing}>
+                            <react_native_1.View style={styles.actionContainer}>
+                                <react_native_1.Text style={styles.actionText}>✅</react_native_1.Text>
+                            </react_native_1.View>
+                        </react_native_1.TouchableOpacity>
+                    </react_native_1.View>) : (<react_native_1.View style={styles.actions}>
+                        <react_native_1.TouchableOpacity onPressOut={this._startEditing}>
+                            <react_native_1.View style={styles.actionContainer}>
+                                <react_native_1.Text style={styles.actionText}>✏️</react_native_1.Text>
+                            </react_native_1.View>
+                        </react_native_1.TouchableOpacity>
+                        <react_native_1.TouchableOpacity onPressOut={function () { return deleteTodo(id); }}>
+                            <react_native_1.View style={styles.actionContainer}>
+                                <react_native_1.Text style={styles.actionText}>❌</react_native_1.Text>
+                            </react_native_1.View>
+                        </react_native_1.TouchableOpacity>
+                    </react_native_1.View>)}
+            </react_native_1.View>);
+    };
+    Todo.propTypes = {
+        text: prop_types_1.default.string.isRequired,
+        isDone: prop_types_1.default.bool.isRequired,
+        deleteTodo: prop_types_1.default.func.isRequired,
+        id: prop_types_1.default.string.isRequired,
+        completeTodo: prop_types_1.default.func.isRequired,
+        uncompleteTodo: prop_types_1.default.func.isRequired,
+        modifyTodoItem: prop_types_1.default.func.isRequired
+    };
+    Todo = __decorate([
+        mobx_react_1.observer
+    ], Todo);
+    return Todo;
+}(react_1.Component));
+exports.default = Todo;
+var styles = react_native_1.StyleSheet.create({
     container: {
         width: width - 70,
         borderBottomColor: "#bbb",
-        borderBottomWidth: StyleSheet.hairlineWidth,
+        borderBottomWidth: react_native_1.StyleSheet.hairlineWidth,
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between"
